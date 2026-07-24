@@ -1,0 +1,9 @@
+# ⚡ ZARO DEPLOY — PaaS Configuration
+services:
+  - type: web
+    name: zaro-deploy
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /api/health
+    plan: free
