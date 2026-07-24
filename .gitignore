@@ -1,0 +1,10 @@
+apps/*
+!apps/.gitkeep
+*.log
+current_url.txt
+cf_url.txt
+cf.log
+state.json
+__pycache__
+*.pyc
+cloudflared
