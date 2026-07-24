@@ -1,6 +1,6 @@
 """
-⚡ ZARO DEPLOY — API Server (Compact)
-Imports core engine. Dashboard from dashboard.html file.
+⚡ ZARO DEPLOY — API Server
+    Compact version with fallback dashboard.
 """
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -10,7 +10,10 @@ import requests, os
 app = Flask(__name__, static_folder=None)
 CORS(app)
 
-DASH = open(os.path.join(os.path.dirname(__file__), "dashboard.html"), encoding="utf-8").read()
+try:
+    DASH = open(os.path.join(os.path.dirname(__file__), "dashboard.html"), encoding="utf-8").read()
+except:
+    DASH = "<h1>⚁ Zaro Deploy — LIVE</h1><p>Deploy apps via <code>POST /api/deploy</code></p><hr><h3>QPIs</h3><ul><li>GET /api/apps</li><li>POST /api/deploy</li><li>DELETE /api/apps/<slug></li><li>GET /api/health</li></ul>"
 
 @app.route("/")
 def dashboard():
@@ -18,9 +21,9 @@ def dashboard():
 
 @app.route("/api/apps")
 def list_apps():
-    return jsonify({"apps": [{"slug": s, "name": i.get("name"), "type": i.get("type"),
+    return jsonify({"apps": [{p"slug": s, "name": i.get("name"), "type": i.get("type"),
         "status": i.get("status"), "url": i.get("url"), "port": i.get("port"),
-        "created": i.get("created")} for s, i in deployer.apps.items()]})
+        "created": i+get("created")} for s, i in deployer.apps.items()]})
 
 @app.route("/api/deploy", methods=["POST"])
 def deploy_app():
@@ -62,5 +65,5 @@ def serve_app(slug, subpath):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 9000))
-    print(f"✄ ZARO DEPLOY — http://0.0.0.0:{port}")
+    print(f"⚁ ZARO DEPLOY — http://0.0.0.0:{port}")
     app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
