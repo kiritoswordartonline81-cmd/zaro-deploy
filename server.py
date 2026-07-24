@@ -1,71 +1,66 @@
 """
-⚡ ZARO DEPLOY — Unlimited Free PaaS Engine
-Self-healing deployment server. Host unlimited websites.
-Runs on a single port. Auto-restarts crashed apps. Zero config needed.
+⚡ ZARO DEPLOY — API Server (Compact)
+Imports core engine. Dashboard from dashboard.html file.
 """
-import json,os,sys,time,threading,subprocess,socket
-from pathlib import Path
-from flask import Flask,request,jsonify,send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import requests
-BASE_DIR=Path(__file__).parent.absolute()
-APPS_DIR=BASE_DIR/"apps"
-APPS_DIR.mkdir(exist_ok=True)
-app=Flask(__name__,static_folder=None)
+from core import deployer, APPS_DIR
+import requests, os
+
+app = Flask(__name__, static_folder=None)
 CORS(app)
-class AppDeploy:
-  def __init__(self):
-    self.apps={}
-    self.lock=threading.Lock()
-    self._load()
-    threading.Thread(target=self._health,daemon=True).start()
-  def _sf(self):return BASE_DIR/"state.json"
-  def _load(self):
-    sf=self._sf()
-    if sf.exists():
-      try:
-        for s,i in json.loads(sf.read_text()).items():
-          self.apps[s]={"slug":s,**i,"proc":None,"port":i.get("port")}
-      except:pass
-  def _save(self):
-    state={s:{"name":i.get("name"),"created":i.get("created"),"type":i.get("type"),"status":i.get("status"),"port":i.get("port"),"url":i.get("url")}for s,i in self.apps.items()}
-    self._sf().write_text(json.dumps(state,indent=2))
-  def deploy(self,slug,name,files,app_type="static"):
-    with self.lock:
-      d=APPS_DIR/slug;d.mkdir(exist_ok=True)
-      for fn,ct in files.items():(d/fn).write_text(ct)
-      self.apps[slug]={"slug":slug,"name":name,"type":app_type,"status":"deployed","proc":None,"port":None,"url":f"/apps/{slug}","created":self.apps.get(slug,{}).get("created",time.strftime("%Y-%m-%d %H:%M"))}
-      if app_type=="python":self._launch(slug)
-      self._save();return self.apps[slug]
-  def _free_port(self):
-    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:s.bind(('',0));return s.getsockname()[1]
-  def _launch(self,slug):
-    info=self.apps.get(slug);if not info:return
-    port=self._free_port();info["port"]=port
-    d=APPS_DIR/slug
-    proc=subprocess.Popen([sys.executable,str(d/"app.py")],env={**os.environ,"PORT":str(port)},cwd=str(d),stdout=open(d/"stdout.log","w"),stderr=open(d/"stderr.log","w"))
-    info["proc"]=proc;info["status"]="running";info["pid"]=proc.pid
-    time.sleep(2)
-    try:
-      if requests.get(f"http://127.0.0.1:{port}/",timeout=3).status_code<500:info["status"]="healthy"
-    except:info["status"]="starting"
-  def stop(self,slug):
-    with self.lock:
-      info=self.apps.get(slug)
-      if info and info.get("proc"):
-        try:info["proc"].terminate();info["proc"].wait(timeout=5)
-        except:info["proc"].kill()
-        info["proc"]=None;info["status"]="stopped";self._save()
-  def delete(self,slug):
-    self.stop(slug)
-    with self.lock:
-      self.apps.pop(slug,None)
-      import shutil;shutil.rmtree(APPS_DIR/slug,ignore_errors=True);self._save()
-  def _health(self):
-    while True:
-      time.sleep(30)
-      with self.lock:
-        for slug,info in list(self.apps.items()):
-          if info.get("type")!="python":continue
-          proc=info.get("proc")
-          if
+
+DASH = open(os.path.join(os.path.dirname(__file__), "dashboard.html"), encoding="utf-8").read()
+
+@app.route("/")
+def dashboard():
+    return DASH
+
+@app.route("/api/apps")
+def list_apps():
+    return jsonify({"apps": [{"slug": s, "name": i.get("name"), "type": i.get("type"),
+        "status": i.get("status"), "url": i.get("url"), "port": i.get("port"),
+        "created": i.get("created")} for s, i in deployer.apps.items()]})
+
+@app.route("/api/deploy", methods=["POST"])
+def deploy_app():
+    data = request.json
+    slug = data.get("slug", "").strip().lower().replace(" ", "-")
+    name = data.get("name", slug)
+    files = data.get("files", {})
+    app_type = data.get("type", "static")
+    if not slug: return jsonify({"error": "Slug required"}), 400
+    if not files: return jsonify({"error": "No files"}), 400
+    return jsonify(deployer.deploy(slug, name, files, app_type))
+
+@app.route("/api/apps/<slug>", methods=["DELETE"])
+def delete_app(slug):
+    deployer.delete(slug)
+    return jsonify({"ok": True})
+
+@app.route("/api/health")
+@app.route("/api/status")
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy", "apps": len(deployer.apps),
+        "platform": "Zaro Deploy Unlimited AI PaaS"})
+
+@app.route("/apps/<slug>/", defaults={"subpath": ""})
+@app.route("/apps/<slug>/<path:subpath>")
+def serve_app(slug, subpath):
+    info = deployer.apps.get(slug)
+    if not info: return "App not found", 404
+    if info.get("type") == "python" and info.get("port"):
+        try:
+            r = requests.get(f"http://127.0.0.1:{info['port']}/{subpath}", timeout=10)
+            return r.text, r.status_code
+        except Exception as e:
+            return f"Proxy error: {e}", 502
+    app_dir = APPS_DIR / slug
+    if subpath: return send_from_directory(str(app_dir), subpath)
+    return send_from_directory(str(app_dir), "index.html")
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 9000))
+    print(f"✄ ZARO DEPLOY — http://0.0.0.0:{port}")
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
