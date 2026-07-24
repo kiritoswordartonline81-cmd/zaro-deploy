@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>⚡ Zaro Deploy — Unlimited AI PaaS</title>
+<style>
+:root{--bg:#050510;--sf:#0a0a22;--bd:#1a1a3e;--tx:#e0e0f0;--mu:#555588;--g:#10b981;--b:#6366f1;--r:#ef4444;--p:#a855f7;--y:#f59e0b }
+"{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,.15) 0%,transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(16,185,129,.08) 0%,transparent 60%)}
+.hero h1{font-size:clamp(2rem,6vw,4rem);font-weight:900;background:linear-gradient(135deg,#6366f1,#a855f7,#10b981,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px;line-height:1.2}
+.hero p{font-size:1.1rem;color:var(--mu);max-width:600px;margin-bottom:30px;line-height:1.6}
+.hero .badge-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700}
+.badge-live{background:rgba(16,185,129,.12);color:var(--g);border:1px solid rgba(16,185,129,.25)}
+.badge-live::before{content:'';width:7px;height:7px;background:var(--g);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.badge-free{background:rgba(245,158,11,.12);color:var(--y);border:1px solid rgba(245,158,11,.25)}
+.badge-unlimited{background:rgba(168,85,247,.12);color:var(--p);border:1px solid rgba(168,85,247,.25)}
+.btn{display:inline-block;padding:12px 28px;border-radius:10px;font-weight:700;font-size:.9rem;text-decoration:none;cursor:pointer;transition:.2s;font-family:inherit;border:none}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
+.btn-outline{background:transparent;color:#fff;border:1px solid var(--bd)}
+.btn-outline:hover{border-color:var(--b);background:rgba(99,102,241,.05)}
+.features{max-width:1200px;margin:0 auto;padding:60px 20px}
+.features h2{text-align:center;font-size:1.8rem;margin-bottom:10px}
+.features .sub{text-align:center;color:var(--mu);margin-bottom:40px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:24px;transition:.2s}
+.card:hover{border-color:var(--b);transform:translateY(-2px)}
+.card .icon{font-size:2rem;margin-bottom:12px}
+.card h3{font-size:1rem;margin-bottom:6px}
+.card p{font-size:.8rem;color:var(--mu);line-height:1.6}
+.apps{background:var(--sf);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:60px 20px}
+.apps h2{text-align:center;font-size:1.8rem;margin-bottom:30px}
+.app-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.app-card{background:rgba(255,255,255,.02);border:1px solid var(--bd);border-radius:14px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:.2s;text-decoration:none;color:inherit}
+.app-card:hover{border-color:var(--b);background:rgba(99,102,241,.04)}
+.app-card .app-icon{font-size:1.8rem}
+.app-card .app-info{flex:1}
+.app-card .app-name{font-weight:700;font-size:.9rem}
+.app-card .app-desc{font-size:.7rem;color:var(--mu);margin-top:2px}
+.app-card .app-link{font-size:.7rem;color:var(--b)}
+.cta{text-align:center;padding:60px 20px}
+.cta h2{font-size:1.8rem;margin-bottom:10px}
+.cta p{color:var(--mu);margin-bottom:24px;font-size:.9rem}
+.footer{text-align:center;padding:30px 20px;color:var(--mu);font-size:.75rem;border-top:1px solid var(--bd)}
+.footer a{color:var(--b);text-decoration:none}
+.status{max-width:1200px;margin:20px auto;padding:0 20px}
+.status-box{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;font-size:.8rem}
+.status-dot{width:9px;height:9px;background:var(--g);border-radius:50%;animation:pulse 1.5s infinite;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge-row">
+    <span class="badge badge-live">3 Apps LIVE</span>
+    <span class="badge badge-free">₺0 Forever</span>
+    <span class="badge badge-unlimited">Unlimited Deploys</span>
+  </div>
+  <h1>⚡ Zaro Deploy</h1>
+  <p>Like Hugging Face Spaces — <strong>your server, your rules</strong>.<br>Deploy Gradio AI apps, Streamlit dashboards, Flask APIs, static sites. Unlimited. FREE forever.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <a href="https://zaro-deploy.onrender.com" class="btn btn-primary">🙀 Open Dashboard</a>
+    <a href="#apps" class="btn btn-outline">📦 View Apps</a>
+  </div>
+</div>
+
+<div class="status" id="statusBox"></div>
+
+<div class="features">
+  <h2>🧠 Why Zaro Deploy?</h2>
+  <p class="sub">Everything you need to deploy AI apps — 100% free</p>
+  <div class="grid">
+    <div class="card">
+      <div class="icon">🤸</div>
+      <h3>Gradio AI Apps</h3>
+      <p>Deploy chatbots, image generators, and ML models with one click. Supports Gradio 4.0+ with auto-port allocation.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h3>Streamlit Dashboards</h3>
+      <p>Interactive data dashboards, analytics, and visualization tools. pandas + numpy pre-installed.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔎</div>
+      <h3>Flask & FastAPI</h3>
+      <p>REST APIs with CORS support. Auto-detects app.py, installs requirements, and proxies to subprocess.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📄</div>
+      <h3>Static Sites</h3>
+      <p>HTML, CSS, JS — deploy any static website instantly. Perfect for landing pages and portfolios.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🛣️</div>
+      <h3>Auto-Healing</h3>
+      <p>Health checks every 30 seconds. If your app crashes, Zaro automatically restarts it.</p>
+    </div>
+    <div class="card">
+      <div class="icon">💸</div>
+      <h3>₺0 Forever</h3>
+      <p>No credit card. No limits. No hidden fees. Just pure, unlimited deployment forever on Render.</p>
+    </div>
+  </div>
+</div>
+
+<div class="apps" id="apps">
+  <h2>📦 Deployed Apps</h2>
+  <div class="app-grid" id="appGrid">
+    <div class="app-card">
+      <div class="app-icon">🤸</div>
+      <div class="app-info"><div class="app-name">AI Trading Bot Pro</div><div class="app-desc">Binance + AI Signals + Live Trading</div></div>
+      <a href="https://zaro-deploy.onrender.com/apps/ai-trading-bot/" class="app-link">→</a>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">🚀</div>
+      <div class="app-info"><div class="app-name">Hello World Demo</div><div class="app-desc">First deployed app</div></div>
+      <a href="https://zaro-deploy.onrender.com/apps/hello-world/" class="app-link">→</a>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">🔎</div>
+      <div class="app-info"><div class="app-name">REST API Demo</div><div class="app-desc">Flask + CORS + Users API</div></div>
+      <a href="https://zaro-deploy.onrender.com/apps/rest-api/" class="app-link">→</a>
+    </div>
+  </div>
+</div>
+
+<div class="cta">
+  <h2>Ready to Deploy?</h2>
+  <p>Open the dashboard, click <strong>✧ Deploy</strong>, paste your code. That's it.</p>
+  <a href="https://zaro-deploy.onrender.com" class="btn btn-primary">🙀 Launch Dashboard →</a>
+</div>
+
+<div class="footer">
+  <p>⚡ <strong>Zaro Deploy</strong> — Unlimited AI PaaS | Powered by <a href="https://render.com">Render</a> | Built with ❤️</p>
+  <p style="margin-top:6px"><a href="https://zaro-deploy.onrender.com/api/health">API Health</a> · <a href="https://github.com/kiritoswordartonline81-cmd/zaro-deploy">GitHub</a> · <a href="https://dashboard.render.com/web/srv-d9hnpb3rjlhs739erck0">Render Dashboard</a></p>
+</div>
+
+<script>
+async function checkStatus(){
+  try{
+    let r=await fetch('https://zaro-deploy.onrender.com/api/health');
+    let d=await r.json();
+    document.getElementById('statusBox').innerHTML=`<div class="status-box"><div class="status-dot"></div><strong>${d.apps} apps running</strong> · Status: ${d.status} · Platform: ${d.platform}</div>`;
+  }catch(e){
+    document.getElementById('statusBox').innerHTML=`<div class="status-box" style="background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.15)"><div class="status-dot" style="background:var(--r)"></div>Server waking up... Render free tier spins down after inactivity.</div>`;
+  }
+}
+checkStatus();
+</script>
+</body>
+</html>
